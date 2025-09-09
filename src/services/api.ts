@@ -21,14 +21,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
-    
+
     // You can add global error handling here
     if (error.response?.status === 500) {
       console.error('Server error occurred');
     } else if (error.response?.status === 404) {
       console.error('Resource not found');
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -112,7 +112,10 @@ export const workflowApi = {
   },
 
   // Update workflow
-  async update(id: string, updateData: Partial<CreateWorkflowData>): Promise<ApiResponse<Workflow>> {
+  async update(
+    id: string,
+    updateData: Partial<CreateWorkflowData>
+  ): Promise<ApiResponse<Workflow>> {
     const response = await api.put(`/workflows/${id}`, updateData);
     return response.data;
   },

@@ -6,17 +6,17 @@
 
 'use client';
 
+import { SaveIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { SaveIcon, XIcon } from 'lucide-react';
 
 // Available triggers and actions as defined in the backend
 const TRIGGERS = [
   {
     value: 'onUserSignup',
     label: 'User Signup',
-    description: 'Triggered when a new user signs up'
-  }
+    description: 'Triggered when a new user signs up',
+  },
 ];
 
 const ACTIONS = [
@@ -27,8 +27,8 @@ const ACTIONS = [
     configFields: [
       { name: 'to', label: 'To Email', type: 'email', placeholder: 'user@example.com' },
       { name: 'subject', label: 'Subject', type: 'text', placeholder: 'Welcome!' },
-      { name: 'body', label: 'Message Body', type: 'textarea', placeholder: 'Email content...' }
-    ]
+      { name: 'body', label: 'Message Body', type: 'textarea', placeholder: 'Email content...' },
+    ],
   },
   {
     value: 'insertRow',
@@ -36,8 +36,8 @@ const ACTIONS = [
     description: 'Insert data into a table',
     configFields: [
       { name: 'table', label: 'Table Name', type: 'text', placeholder: 'logs' },
-      { name: 'data', label: 'Data (JSON)', type: 'textarea', placeholder: '{"key": "value"}' }
-    ]
+      { name: 'data', label: 'Data (JSON)', type: 'textarea', placeholder: '{"key": "value"}' },
+    ],
   },
   {
     value: 'writeLog',
@@ -45,8 +45,13 @@ const ACTIONS = [
     description: 'Write a custom log entry',
     configFields: [
       { name: 'message', label: 'Log Message', type: 'text', placeholder: 'Custom log message' },
-      { name: 'status', label: 'Status', type: 'select', options: ['success', 'pending', 'failed'] }
-    ]
+      {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        options: ['success', 'pending', 'failed'],
+      },
+    ],
   },
   {
     value: 'saveFile',
@@ -55,8 +60,8 @@ const ACTIONS = [
     configFields: [
       { name: 'fileName', label: 'File Name', type: 'text', placeholder: 'data.json' },
       { name: 'bucket', label: 'Bucket Name', type: 'text', placeholder: 'default-bucket' },
-      { name: 'content', label: 'File Content', type: 'textarea', placeholder: 'File content...' }
-    ]
+      { name: 'content', label: 'File Content', type: 'textarea', placeholder: 'File content...' },
+    ],
   },
   {
     value: 'chainWorkflow',
@@ -64,9 +69,9 @@ const ACTIONS = [
     description: 'Trigger another workflow',
     configFields: [
       { name: 'workflowId', label: 'Target Workflow ID', type: 'text', placeholder: 'workflow-id' },
-      { name: 'delay', label: 'Delay (ms)', type: 'number', placeholder: '0' }
-    ]
-  }
+      { name: 'delay', label: 'Delay (ms)', type: 'number', placeholder: '0' },
+    ],
+  },
 ];
 
 interface WorkflowFormProps {
@@ -77,41 +82,41 @@ interface WorkflowFormProps {
   loading?: boolean;
 }
 
-export default function WorkflowForm({ 
-  onSubmit, 
-  onCancel, 
-  initialData = null, 
+export default function WorkflowForm({
+  onSubmit,
+  onCancel,
+  initialData = null,
   isEditing = false,
-  loading = false 
+  loading = false,
 }: WorkflowFormProps) {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     trigger: initialData?.trigger || 'onUserSignup',
     action: initialData?.action || '',
-    config: initialData?.config || {}
+    config: initialData?.config || {},
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const selectedAction = ACTIONS.find(action => action.value === formData.action);
+  const selectedAction = ACTIONS.find((action) => action.value === formData.action);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Workflow name is required';
     }
-    
+
     if (!formData.action) {
       newErrors.action = 'Please select an action';
     }
 
     // Validate config fields
     if (selectedAction?.configFields) {
-      selectedAction.configFields.forEach(field => {
+      selectedAction.configFields.forEach((field) => {
         if (field.name === 'data') {
           // Validate JSON for data field
           if (formData.config[field.name]) {
@@ -134,10 +139,10 @@ export default function WorkflowForm({
     try {
       // Process config data
       const processedConfig = { ...formData.config };
-      
+
       // Parse JSON fields
       if (selectedAction?.configFields) {
-        selectedAction.configFields.forEach(field => {
+        selectedAction.configFields.forEach((field) => {
           if (field.name === 'data' && processedConfig[field.name]) {
             try {
               processedConfig[field.name] = JSON.parse(processedConfig[field.name]);
@@ -145,7 +150,7 @@ export default function WorkflowForm({
               // Keep as string if parsing fails
             }
           }
-          
+
           // Convert number fields
           if (field.type === 'number' && processedConfig[field.name]) {
             processedConfig[field.name] = parseInt(processedConfig[field.name]);
@@ -155,9 +160,9 @@ export default function WorkflowForm({
 
       await onSubmit({
         ...formData,
-        config: processedConfig
+        config: processedConfig,
       });
-      
+
       setErrors({});
     } catch (error) {
       console.error('Form submission error:', error);
@@ -165,17 +170,17 @@ export default function WorkflowForm({
   };
 
   const handleConfigChange = (fieldName: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       config: {
         ...prev.config,
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     }));
-    
+
     // Clear related errors
     if (errors[`config.${fieldName}`]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[`config.${fieldName}`];
         return newErrors;
@@ -191,9 +196,7 @@ export default function WorkflowForm({
       case 'textarea':
         return (
           <div key={field.name} className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              {field.label}
-            </label>
+            <label className="block text-sm font-medium text-gray-700">{field.label}</label>
             <textarea
               value={value}
               onChange={(e) => handleConfigChange(field.name, e.target.value)}
@@ -206,13 +209,11 @@ export default function WorkflowForm({
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
         );
-        
+
       case 'select':
         return (
           <div key={field.name} className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              {field.label}
-            </label>
+            <label className="block text-sm font-medium text-gray-700">{field.label}</label>
             <select
               value={value}
               onChange={(e) => handleConfigChange(field.name, e.target.value)}
@@ -230,13 +231,11 @@ export default function WorkflowForm({
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
         );
-        
+
       default:
         return (
           <div key={field.name} className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              {field.label}
-            </label>
+            <label className="block text-sm font-medium text-gray-700">{field.label}</label>
             <input
               type={field.type}
               value={value}
@@ -266,16 +265,14 @@ export default function WorkflowForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Workflow Name */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">
-            Workflow Name
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Workflow Name</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => {
-              setFormData(prev => ({ ...prev, name: e.target.value }));
+              setFormData((prev) => ({ ...prev, name: e.target.value }));
               if (errors.name) {
-                setErrors(prev => ({ ...prev, name: '' }));
+                setErrors((prev) => ({ ...prev, name: '' }));
               }
             }}
             placeholder="Enter workflow name..."
@@ -288,15 +285,13 @@ export default function WorkflowForm({
 
         {/* Trigger Selection */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">
-            Trigger
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Trigger</label>
           <select
             value={formData.trigger}
-            onChange={(e) => setFormData(prev => ({ ...prev, trigger: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({ ...prev, trigger: e.target.value }))}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
-            {TRIGGERS.map(trigger => (
+            {TRIGGERS.map((trigger) => (
               <option key={trigger.value} value={trigger.value}>
                 {trigger.label} - {trigger.description}
               </option>
@@ -306,19 +301,17 @@ export default function WorkflowForm({
 
         {/* Action Selection */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">
-            Action
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Action</label>
           <select
             value={formData.action}
             onChange={(e) => {
-              setFormData(prev => ({ 
-                ...prev, 
+              setFormData((prev) => ({
+                ...prev,
                 action: e.target.value,
-                config: {} // Reset config when action changes
+                config: {}, // Reset config when action changes
               }));
               if (errors.action) {
-                setErrors(prev => ({ ...prev, action: '' }));
+                setErrors((prev) => ({ ...prev, action: '' }));
               }
             }}
             className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
@@ -326,7 +319,7 @@ export default function WorkflowForm({
             }`}
           >
             <option value="">Select an action...</option>
-            {ACTIONS.map(action => (
+            {ACTIONS.map((action) => (
               <option key={action.value} value={action.value}>
                 {action.label} - {action.description}
               </option>

@@ -5,18 +5,18 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
-  ActivityIcon, 
-  AlertCircleIcon, 
+import Navigation from '@/components/Navigation';
+import { logsApi, type Log } from '@/services/api';
+import {
+  ActivityIcon,
+  AlertCircleIcon,
   CheckCircleIcon,
   ClockIcon,
   FilterIcon,
   RefreshCwIcon,
-  SearchIcon
+  SearchIcon,
 } from 'lucide-react';
-import Navigation from '@/components/Navigation';
-import { logsApi, type Log } from '@/services/api';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 type LogLevel = 'success' | 'failed' | 'pending';
@@ -59,13 +59,14 @@ export default function LogsPage() {
   };
 
   // Filter logs based on status and search term
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = logs.filter((log) => {
     const matchesFilter = filter === 'all' || log.status === filter;
-    const matchesSearch = !searchTerm || 
+    const matchesSearch =
+      !searchTerm ||
       (log.message && log.message.toLowerCase().includes(searchTerm.toLowerCase())) ||
       log.workflowId?.toString().includes(searchTerm) ||
       log.action?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     return matchesFilter && matchesSearch;
   });
 
@@ -97,7 +98,7 @@ export default function LogsPage() {
 
   const getLogCount = (status: LogLevel | 'all') => {
     if (status === 'all') return logs.length;
-    return logs.filter(log => log.status === status).length;
+    return logs.filter((log) => log.status === status).length;
   };
 
   if (loading) {
@@ -116,17 +117,15 @@ export default function LogsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
-            <p className="mt-2 text-gray-600">
-              Monitor workflow executions and system activity
-            </p>
+            <p className="mt-2 text-gray-600">Monitor workflow executions and system activity</p>
           </div>
-          
+
           <button
             onClick={handleRefresh}
             disabled={refreshing}
@@ -186,7 +185,7 @@ export default function LogsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center">
               <CheckCircleIcon className="h-6 w-6 text-green-600 mr-2" />
@@ -196,7 +195,7 @@ export default function LogsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center">
               <ClockIcon className="h-6 w-6 text-yellow-600 mr-2" />
@@ -206,7 +205,7 @@ export default function LogsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center">
               <AlertCircleIcon className="h-6 w-6 text-red-600 mr-2" />
@@ -224,24 +223,26 @@ export default function LogsPage() {
             <div className="text-center py-12">
               <ActivityIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
               <p className="text-gray-500">
-                {searchTerm || filter !== 'all' ? 'No logs match your filters' : 'No logs available'}
+                {searchTerm || filter !== 'all'
+                  ? 'No logs match your filters'
+                  : 'No logs available'}
               </p>
               <p className="text-sm text-gray-400">
-                {searchTerm || filter !== 'all' 
-                  ? 'Try adjusting your search or filter criteria' 
-                  : 'Execute some workflows to see logs appear here'
-                }
+                {searchTerm || filter !== 'all'
+                  ? 'Try adjusting your search or filter criteria'
+                  : 'Execute some workflows to see logs appear here'}
               </p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
               {filteredLogs.map((log) => (
-                <div key={log.id} className={`p-4 hover:bg-gray-50 transition-colors ${getLogBgColor(log.status)}`}>
+                <div
+                  key={log.id}
+                  className={`p-4 hover:bg-gray-50 transition-colors ${getLogBgColor(log.status)}`}
+                >
                   <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      {getLogIcon(log.status)}
-                    </div>
-                    
+                    <div className="flex-shrink-0 mt-0.5">{getLogIcon(log.status)}</div>
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <div>
@@ -253,7 +254,7 @@ export default function LogsPage() {
                             )}
                             {log.message || `Workflow executed with status: ${log.status}`}
                           </p>
-                          
+
                           {log.workflowId && (
                             <p className="text-xs text-gray-500 mt-1">
                               Workflow ID: {log.workflowId}
@@ -262,11 +263,12 @@ export default function LogsPage() {
 
                           {log.workflow && (
                             <p className="text-xs text-gray-500 mt-1">
-                              Workflow: {log.workflow.name} ({log.workflow.trigger} → {log.workflow.action})
+                              Workflow: {log.workflow.name} ({log.workflow.trigger} →{' '}
+                              {log.workflow.action})
                             </p>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center text-xs text-gray-500">
                           <ClockIcon className="h-3 w-3 mr-1" />
                           {new Date(log.createdAt).toLocaleString()}

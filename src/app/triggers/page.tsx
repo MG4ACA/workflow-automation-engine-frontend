@@ -5,16 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
-  PlayIcon, 
-  ZapIcon, 
-  UserPlusIcon,
-  HistoryIcon,
-  CheckCircleIcon
-} from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { triggerApi, workflowApi, type Workflow } from '@/services/api';
+import { CheckCircleIcon, HistoryIcon, PlayIcon, UserPlusIcon, ZapIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 interface TriggerHistoryItem {
@@ -40,7 +34,7 @@ export default function TriggersPage() {
   const [userSignupData, setUserSignupData] = useState({
     email: '',
     name: '',
-    source: 'manual_trigger'
+    source: 'manual_trigger',
   });
 
   // Load workflows
@@ -63,7 +57,7 @@ export default function TriggersPage() {
 
   const handleUserSignupTrigger = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!userSignupData.email || !userSignupData.name) {
       toast.error('Please fill in all required fields');
       return;
@@ -71,35 +65,34 @@ export default function TriggersPage() {
 
     try {
       setTriggering(true);
-      
+
       const triggerData = {
         ...userSignupData,
         id: `user-${Date.now()}`,
-        signupTime: new Date().toISOString()
+        signupTime: new Date().toISOString(),
       };
 
       const response = await triggerApi.userSignup(triggerData);
-      
+
       toast.success('User signup trigger executed successfully!');
-      
+
       // Add to trigger history
       const newHistoryItem = {
         id: Date.now(),
         trigger: 'onUserSignup',
         data: triggerData,
         timestamp: new Date().toISOString(),
-        response: response
+        response: response,
       };
-      
-      setTriggerHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
-      
+
+      setTriggerHistory((prev) => [newHistoryItem, ...prev.slice(0, 9)]);
+
       // Reset form
       setUserSignupData({
         email: '',
         name: '',
-        source: 'manual_trigger'
+        source: 'manual_trigger',
       });
-      
     } catch (error) {
       console.error('Failed to trigger user signup:', error);
       toast.error('Failed to execute trigger');
@@ -111,27 +104,26 @@ export default function TriggersPage() {
   const handleQuickTrigger = async (sampleData: Record<string, unknown>, triggerType: string) => {
     try {
       setTriggering(true);
-      
+
       let response;
       if (triggerType === 'userSignup') {
         response = await triggerApi.userSignup(sampleData);
       } else {
         response = await triggerApi.generic(triggerType, sampleData);
       }
-      
+
       toast.success(`${triggerType} trigger executed successfully!`);
-      
+
       // Add to trigger history
       const newHistoryItem = {
         id: Date.now(),
         trigger: triggerType,
         data: sampleData,
         timestamp: new Date().toISOString(),
-        response: response
+        response: response,
       };
-      
-      setTriggerHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
-      
+
+      setTriggerHistory((prev) => [newHistoryItem, ...prev.slice(0, 9)]);
     } catch (error) {
       console.error(`Failed to trigger ${triggerType}:`, error);
       toast.error(`Failed to execute ${triggerType} trigger`);
@@ -140,7 +132,7 @@ export default function TriggersPage() {
     }
   };
 
-  const userSignupWorkflows = workflows.filter(w => w.trigger === 'onUserSignup');
+  const userSignupWorkflows = workflows.filter((w) => w.trigger === 'onUserSignup');
 
   if (loading) {
     return (
@@ -158,13 +150,14 @@ export default function TriggersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Triggers</h1>
           <p className="mt-2 text-gray-600">
-            Simulate workflow triggers to test your automation engine. All matching workflows will be executed.
+            Simulate workflow triggers to test your automation engine. All matching workflows will
+            be executed.
           </p>
         </div>
 
@@ -177,9 +170,7 @@ export default function TriggersPage() {
                 <UserPlusIcon className="h-6 w-6 text-blue-600 mr-3" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">User Signup Trigger</h2>
-                  <p className="text-sm text-gray-600">
-                    Simulate a new user registration event
-                  </p>
+                  <p className="text-sm text-gray-600">Simulate a new user registration event</p>
                 </div>
               </div>
 
@@ -189,8 +180,10 @@ export default function TriggersPage() {
                     <strong>{userSignupWorkflows.length}</strong> workflow(s) will be triggered:
                   </p>
                   <ul className="mt-1 text-xs text-blue-700">
-                    {userSignupWorkflows.map(w => (
-                      <li key={w.id}>• {w.name} ({w.action})</li>
+                    {userSignupWorkflows.map((w) => (
+                      <li key={w.id}>
+                        • {w.name} ({w.action})
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -204,7 +197,9 @@ export default function TriggersPage() {
                   <input
                     type="email"
                     value={userSignupData.email}
-                    onChange={(e) => setUserSignupData(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setUserSignupData((prev) => ({ ...prev, email: e.target.value }))
+                    }
                     placeholder="user@example.com"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -218,7 +213,9 @@ export default function TriggersPage() {
                   <input
                     type="text"
                     value={userSignupData.name}
-                    onChange={(e) => setUserSignupData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setUserSignupData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="John Doe"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -226,12 +223,12 @@ export default function TriggersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Source
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
                   <select
                     value={userSignupData.source}
-                    onChange={(e) => setUserSignupData(prev => ({ ...prev, source: e.target.value }))}
+                    onChange={(e) =>
+                      setUserSignupData((prev) => ({ ...prev, source: e.target.value }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="manual_trigger">Manual Trigger</option>
@@ -267,20 +264,23 @@ export default function TriggersPage() {
                 <ZapIcon className="h-6 w-6 text-purple-600 mr-3" />
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Quick Test Triggers</h2>
-                  <p className="text-sm text-gray-600">
-                    Pre-configured test scenarios
-                  </p>
+                  <p className="text-sm text-gray-600">Pre-configured test scenarios</p>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <button
-                  onClick={() => handleQuickTrigger({
-                    email: 'test.user@example.com',
-                    name: 'Test User',
-                    source: 'quick_test',
-                    plan: 'free'
-                  }, 'userSignup')}
+                  onClick={() =>
+                    handleQuickTrigger(
+                      {
+                        email: 'test.user@example.com',
+                        name: 'Test User',
+                        source: 'quick_test',
+                        plan: 'free',
+                      },
+                      'userSignup'
+                    )
+                  }
                   disabled={triggering}
                   className="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
                 >
@@ -289,12 +289,17 @@ export default function TriggersPage() {
                 </button>
 
                 <button
-                  onClick={() => handleQuickTrigger({
-                    email: 'premium.user@example.com',
-                    name: 'Premium User',
-                    source: 'quick_test',
-                    plan: 'premium'
-                  }, 'userSignup')}
+                  onClick={() =>
+                    handleQuickTrigger(
+                      {
+                        email: 'premium.user@example.com',
+                        name: 'Premium User',
+                        source: 'quick_test',
+                        plan: 'premium',
+                      },
+                      'userSignup'
+                    )
+                  }
                   disabled={triggering}
                   className="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
                 >
@@ -311,9 +316,7 @@ export default function TriggersPage() {
               <HistoryIcon className="h-6 w-6 text-green-600 mr-3" />
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">Recent Triggers</h2>
-                <p className="text-sm text-gray-600">
-                  History of executed triggers
-                </p>
+                <p className="text-sm text-gray-600">History of executed triggers</p>
               </div>
             </div>
 
@@ -337,15 +340,9 @@ export default function TriggersPage() {
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      {item.data.email && (
-                        <div>Email: {item.data.email}</div>
-                      )}
-                      {item.data.name && (
-                        <div>Name: {item.data.name}</div>
-                      )}
-                      {item.data.source && (
-                        <div>Source: {item.data.source}</div>
-                      )}
+                      {item.data.email && <div>Email: {item.data.email}</div>}
+                      {item.data.name && <div>Name: {item.data.name}</div>}
+                      {item.data.source && <div>Source: {item.data.source}</div>}
                     </div>
                   </div>
                 ))}

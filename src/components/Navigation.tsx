@@ -5,15 +5,9 @@
 
 'use client';
 
+import { BarChart3Icon, HomeIcon, ScrollTextIcon, WorkflowIcon, ZapIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  HomeIcon, 
-  WorkflowIcon, 
-  ZapIcon, 
-  ScrollTextIcon, 
-  BarChart3Icon 
-} from 'lucide-react';
 
 interface NavItem {
   name: string;
@@ -27,31 +21,31 @@ const navigation: NavItem[] = [
     name: 'Dashboard',
     href: '/',
     icon: HomeIcon,
-    description: 'Overview and quick actions'
+    description: 'Overview and quick actions',
   },
   {
     name: 'Workflows',
     href: '/workflows',
     icon: WorkflowIcon,
-    description: 'Manage your automation workflows'
+    description: 'Manage your automation workflows',
   },
   {
     name: 'Triggers',
     href: '/triggers',
     icon: ZapIcon,
-    description: 'Simulate workflow triggers'
+    description: 'Simulate workflow triggers',
   },
   {
     name: 'Logs',
     href: '/logs',
     icon: ScrollTextIcon,
-    description: 'View execution logs and history'
+    description: 'View execution logs and history',
   },
   {
     name: 'Analytics',
     href: '/analytics',
     icon: BarChart3Icon,
-    description: 'Workflow performance metrics'
+    description: 'Workflow performance metrics',
   },
 ];
 
@@ -67,9 +61,7 @@ export default function Navigation() {
             <div className="flex-shrink-0 flex items-center">
               <div className="flex items-center space-x-2">
                 <WorkflowIcon className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">
-                  Workflow Engine
-                </span>
+                <span className="text-xl font-bold text-gray-900">Workflow Engine</span>
               </div>
             </div>
 
@@ -78,7 +70,7 @@ export default function Navigation() {
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
-                
+
                 return (
                   <Link
                     key={item.name}
@@ -114,7 +106,7 @@ export default function Navigation() {
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
-            
+
             return (
               <Link
                 key={item.name}

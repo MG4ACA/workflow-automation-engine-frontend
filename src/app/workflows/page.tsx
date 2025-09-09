@@ -5,21 +5,21 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
-  PlusIcon, 
-  EditIcon, 
-  TrashIcon, 
-  EyeIcon,
-  PlayIcon,
-  WorkflowIcon,
-  SearchIcon
-} from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import WorkflowForm from '@/components/WorkflowForm';
-import { workflowApi, triggerApi, type Workflow, type CreateWorkflowData } from '@/services/api';
-import { toast } from 'react-hot-toast';
+import { triggerApi, workflowApi, type CreateWorkflowData, type Workflow } from '@/services/api';
+import {
+  EditIcon,
+  EyeIcon,
+  PlayIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
+  WorkflowIcon,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -65,7 +65,7 @@ export default function WorkflowsPage() {
 
   const handleEditWorkflow = async (workflowData: CreateWorkflowData) => {
     if (!editingWorkflow) return;
-    
+
     try {
       setFormLoading(true);
       await workflowApi.update(editingWorkflow.id, workflowData);
@@ -101,13 +101,13 @@ export default function WorkflowsPage() {
         await triggerApi.userSignup({
           email: 'test@example.com',
           name: 'Test User',
-          source: `manual_trigger_${workflow.id}`
+          source: `manual_trigger_${workflow.id}`,
         });
         toast.success(`Triggered workflow: ${workflow.name}`);
       } else {
         await triggerApi.generic(workflow.trigger, {
           workflowId: workflow.id,
-          source: 'manual_trigger'
+          source: 'manual_trigger',
         });
         toast.success(`Triggered workflow: ${workflow.name}`);
       }
@@ -118,18 +118,19 @@ export default function WorkflowsPage() {
   };
 
   // Filter workflows based on search and status
-  const filteredWorkflows = workflows.filter(workflow => {
-    const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         workflow.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         workflow.trigger.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredWorkflows = workflows.filter((workflow) => {
+    const matchesSearch =
+      workflow.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      workflow.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      workflow.trigger.toLowerCase().includes(searchTerm.toLowerCase());
+
     if (filterStatus === 'all') return matchesSearch;
-    
+
     // Filter by last execution status if logs exist
     if (workflow.logs && workflow.logs.length > 0) {
       return matchesSearch && workflow.logs[0].status === filterStatus;
     }
-    
+
     return matchesSearch && filterStatus === 'never_run';
   });
 
@@ -139,7 +140,7 @@ export default function WorkflowsPage() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -156,13 +157,15 @@ export default function WorkflowsPage() {
     const statusColors = {
       success: 'bg-green-100 text-green-800',
       failed: 'bg-red-100 text-red-800',
-      pending: 'bg-yellow-100 text-yellow-800'
+      pending: 'bg-yellow-100 text-yellow-800',
     };
 
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-        statusColors[lastLog.status] || 'bg-gray-100 text-gray-800'
-      }`}>
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+          statusColors[lastLog.status] || 'bg-gray-100 text-gray-800'
+        }`}
+      >
         {lastLog.status.charAt(0).toUpperCase() + lastLog.status.slice(1)}
       </span>
     );
@@ -191,7 +194,7 @@ export default function WorkflowsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -254,10 +257,9 @@ export default function WorkflowsPage() {
                 {workflows.length === 0 ? 'No workflows yet' : 'No workflows match your search'}
               </h3>
               <p className="text-gray-600 mb-6">
-                {workflows.length === 0 
+                {workflows.length === 0
                   ? 'Create your first workflow to get started with automation.'
-                  : 'Try adjusting your search terms or filters.'
-                }
+                  : 'Try adjusting your search terms or filters.'}
               </p>
               {workflows.length === 0 && (
                 <button
@@ -301,9 +303,7 @@ export default function WorkflowsPage() {
                     <tr key={workflow.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {workflow.name}
-                          </div>
+                          <div className="text-sm font-medium text-gray-900">{workflow.name}</div>
                           <div className="text-sm text-gray-500">
                             ID: {workflow.id.slice(0, 8)}...
                           </div>
@@ -320,14 +320,11 @@ export default function WorkflowsPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(workflow)}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(workflow)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {workflow.logs && workflow.logs.length > 0
                           ? formatDate(workflow.logs[0].createdAt)
-                          : 'Never'
-                        }
+                          : 'Never'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(workflow.createdAt)}
